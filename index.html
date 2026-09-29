@@ -1,11 +1,9 @@
-
-
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="de">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>С днём рождения! 🎁</title>
+<title>Alles Gute zum Geburtstag! 🎁</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,800&family=Caveat:wght@500;700&display=swap" rel="stylesheet">
 <style>
@@ -146,11 +144,11 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer;touch-
 <body>
 
 <canvas id="fx"></canvas>
-<button id="snd" aria-label="Звук вкл/выкл">🔊</button>
+<button id="snd" aria-label="Ton an/aus">🔊</button>
 
 <!-- Этап 1 -->
 <section class="stage" id="s1">
-  <div class="box" id="box" role="button" tabindex="0" aria-label="Открыть подарок">
+  <div class="box" id="box" role="button" tabindex="0" aria-label="Geschenk öffnen">
     <div class="body"><div class="rib"></div></div>
     <div class="lid"><div class="rib"></div><div class="bow"><i></i><i></i><b></b></div></div>
     <span class="spark" style="left:-30px;top:20px">✨</span>
@@ -163,14 +161,14 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer;touch-
 <!-- Этап 2 -->
 <div id="cake">
   <div class="plate"></div><div class="tier t1"></div><div class="tier t2"></div>
-  <div class="candle"><div class="wick"></div><div class="flame" id="flame" role="button" tabindex="0" aria-label="Задуть свечу"></div></div>
+  <div class="candle"><div class="wick"></div><div class="flame" id="flame" role="button" tabindex="0" aria-label="Kerze auspusten"></div></div>
   <div class="prompt hide" id="p2"></div>
 </div>
 
 <!-- Этап 3 -->
 <section class="stage" id="s3">
   <div class="cardwrap" id="cardwrap">
-    <div class="tilt" id="tilt" role="button" tabindex="0" aria-label="Открыть письмо">
+    <div class="tilt" id="tilt" role="button" tabindex="0" aria-label="Brief öffnen">
       <div class="polaroid">
         <div class="photo" id="photo"></div>
         <p class="cap" id="cap"></p><div class="hint" id="hint"></div>
@@ -189,34 +187,34 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer;touch-
    CONFIG — редактируйте только этот блок
    ===================================================================== */
 const CONFIG = {
-  recipientName: 'Анна',
-  senderName: 'Твой друг',
-  photoUrl: '',            // ссылка или путь к фото (например 'photo.jpg'). Пусто — покажется photoEmoji
+  recipientName: 'Julius',
+  senderName: 'Dein Freund',
+  photoUrl: '',            // Link oder Pfad zum Foto (z. B. 'photo.jpg'). Leer = photoEmoji wird gezeigt
   photoEmoji: '🥳',
-  caption: 'С днём рождения!',
-  colors: { primary: '#3b1c8c', accent: '#d6336c', warm: '#ff9f43' }, // фиолет → розовый → закат
+  caption: 'Alles Gute!',
+  colors: { primary: '#3b1c8c', accent: '#d6336c', warm: '#ff9f43' }, // Violett → Pink → Sonnenuntergang
   ui: {
-    boxPrompt: 'Нажми, чтобы открыть сюрприз!',
-    cakePrompt: 'Загадай желание и задуй свечу — нажми на пламя!',
-    cardPrompt: 'Нажимай на пузыри и открой письмо 💌',
-    cardHint: 'нажми на открытку',
-    closeBtn: 'Закрыть'
+    boxPrompt: 'Tippe, um deine Überraschung zu öffnen!',
+    cakePrompt: 'Wünsch dir was und tippe auf die Flamme, um die Kerze auszupusten!',
+    cardPrompt: 'Tippe auf die Blasen und öffne den Brief 💌',
+    cardHint: 'tippe auf die Karte',
+    closeBtn: 'Schließen'
   },
-  letterTitle: 'Дорогая {name}!',
+  letterTitle: 'Lieber {name}!',
   letterText:
-`Поздравляю тебя с днём рождения!
-Пусть этот год будет добрым,
-ярким и немного безумным.
-Пусть рядом будут те, кто любит,
-а дела радуют и получаются.
-Ты заслуживаешь всего самого лучшего.
+`Alles, alles Gute zum Geburtstag!
+Möge dieses Jahr freundlich,
+bunt und ein bisschen verrückt werden.
+Mögen dir die Menschen nah sein, die dich lieben,
+und mögen dir deine Vorhaben Freude machen und gelingen.
+Du verdienst nur das Beste.
 
-Обнимаю крепко!`,
+Ich drücke dich ganz fest!`,
   fortunes: [
-    { icon: '🎈', label: 'Счастье', text: 'Каждое утро в этом году будет начинаться с повода улыбнуться.' },
-    { icon: '🚀', label: 'Успех',   text: 'Идеи будут срабатывать с первого раза, а дедлайны — сами сдвигаться.' },
-    { icon: '💰', label: 'Богатство', text: 'Кошелёк потолстеет, а в карманах будут находиться забытые купюры.' },
-    { icon: '🍕', label: 'Пицца',   text: 'Безлимитная пицца до конца года. Условия мелким шрифтом отсутствуют.' }
+    { icon: '🎈', label: 'Glück',     text: 'Jeder Morgen in diesem Jahr beginnt mit einem Grund zum Lächeln.' },
+    { icon: '🚀', label: 'Erfolg',    text: 'Deine Ideen zünden gleich beim ersten Mal, und Deadlines verschieben sich von selbst.' },
+    { icon: '💰', label: 'Reichtum',  text: 'Dein Geldbeutel wird dicker, und in deinen Taschen tauchen vergessene Scheine auf.' },
+    { icon: '🍕', label: 'Pizza',     text: 'Unbegrenzt Pizza bis zum Jahresende. Kleingedrucktes gibt es keins.' }
   ],
   sound: true
 };
@@ -242,9 +240,9 @@ const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
   $('lh').textContent = CONFIG.letterTitle.replace('{name}', CONFIG.recipientName);
   $('lt').textContent = CONFIG.letterText + '\n\n— ' + CONFIG.senderName;
   $('lc').textContent = CONFIG.ui.closeBtn;
-  document.title = 'С днём рождения, ' + CONFIG.recipientName + '! 🎁';
+  document.title = 'Alles Gute zum Geburtstag, ' + CONFIG.recipientName + '! 🎁';
   $('photo').innerHTML = CONFIG.photoUrl
-    ? `<img src="${CONFIG.photoUrl}" alt="Фото" draggable="false">` : CONFIG.photoEmoji;
+    ? `<img src="${CONFIG.photoUrl}" alt="Foto" draggable="false">` : CONFIG.photoEmoji;
   // пузыри-сюрпризы (позиции подобраны так, чтобы не выходить за экран)
   const spots = [['top:-6%;left:-13%', 5, 0], ['top:6%;right:-13%', 6, .8], ['bottom:18%;left:-14%', 5.5, 1.4], ['bottom:6%;right:-12%', 6.5, .4]];
   CONFIG.fortunes.slice(0, 4).forEach((f, i) => {
