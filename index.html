@@ -1,0 +1,426 @@
+
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>С днём рождения! 🎁</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,800&family=Caveat:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --c1:#3b1c8c; --c2:#d6336c; --c3:#ff9f43;           /* перезаписываются из CONFIG.colors */
+  --glass:rgba(255,255,255,.16); --glass-b:rgba(255,255,255,.38); --ink:#2a1450;
+  --ui:'Bricolage Grotesque',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --hand:'Caveat','Segoe Script','Bradley Hand',cursive;
+  --spring:cubic-bezier(.34,1.56,.64,1);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;margin:0;overflow:hidden;overscroll-behavior:none}
+body{
+  font-family:var(--ui);color:#fff;user-select:none;-webkit-user-select:none;
+  background:
+    radial-gradient(60% 50% at 20% 15%,color-mix(in srgb,var(--c2) 60%,transparent),transparent 70%),
+    radial-gradient(70% 60% at 85% 95%,color-mix(in srgb,var(--c3) 90%,transparent),transparent 70%),
+    linear-gradient(160deg,var(--c1),color-mix(in srgb,var(--c1) 50%,var(--c2)) 55%,var(--c3));
+  background-size:140% 140%;animation:drift 18s ease-in-out infinite alternate;
+  padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+}
+@keyframes drift{to{background-position:100% 100%}}
+canvas#fx{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:50}
+button{font:inherit;color:inherit;border:0;background:none;cursor:pointer;touch-action:manipulation}
+.stage{position:fixed;inset:0;display:grid;place-items:center}
+.prompt{
+  position:absolute;left:0;right:0;text-align:center;padding:0 24px;font-weight:800;
+  font-size:clamp(1.15rem,4.6vw,1.7rem);letter-spacing:-.01em;text-wrap:balance;
+  text-shadow:0 2px 18px rgba(40,10,80,.45);transition:opacity .5s,transform .5s
+}
+.prompt.pulse{animation:pulse 1.8s ease-in-out infinite}
+.prompt.hide{opacity:0;transform:translateY(10px);pointer-events:none}
+@keyframes pulse{50%{transform:scale(1.06);opacity:.8}}
+
+/* ---------- Кнопка звука ---------- */
+#snd{position:fixed;top:calc(14px + env(safe-area-inset-top));right:14px;z-index:60;width:46px;height:46px;border-radius:50%;
+  background:var(--glass);border:1px solid var(--glass-b);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  font-size:20px;transition:transform .3s var(--spring)}
+#snd:hover{transform:scale(1.12) rotate(-8deg)}#snd:active{transform:scale(.9)}
+
+/* ---------- Этап 1: коробка ---------- */
+#s1{transition:opacity .6s,transform .8s var(--spring)}
+#s1.gone{opacity:0;transform:translateY(40px) scale(.7);pointer-events:none}
+#s1 .prompt{top:calc(50% + 150px)}
+.box{position:relative;width:190px;height:190px;cursor:pointer;transition:transform .35s var(--spring);filter:drop-shadow(0 30px 30px rgba(30,5,60,.45))}
+.box:hover{transform:scale(1.06) rotate(-2deg)}.box:active{transform:scale(.94)}
+.box:focus-visible{outline:3px solid #fff;outline-offset:14px;border-radius:20px}
+.box.shake{animation:shake .8s linear}
+@keyframes shake{0%,100%{transform:none}10%{transform:translate(-6px,2px) rotate(-4deg)}20%{transform:translate(7px,-2px) rotate(4deg)}30%{transform:translate(-8px,3px) rotate(-5deg)}40%{transform:translate(8px,-3px) rotate(5deg)}50%{transform:translate(-9px,0) rotate(-6deg) scale(1.05)}60%{transform:translate(9px,0) rotate(6deg) scale(1.05)}70%{transform:translate(-5px,2px) rotate(-3deg)}85%{transform:translate(4px,-1px) rotate(2deg)}}
+.box .body{position:absolute;left:8px;right:8px;bottom:0;height:130px;border-radius:6px 6px 18px 18px;
+  background:linear-gradient(90deg,rgba(0,0,0,.18),transparent 22%,rgba(255,255,255,.18) 50%,transparent 78%,rgba(0,0,0,.2)),linear-gradient(#ff5d8f,#c9184a)}
+.box .lid{position:absolute;left:0;right:0;top:22px;height:54px;border-radius:12px;z-index:2;
+  background:linear-gradient(90deg,rgba(0,0,0,.15),transparent 22%,rgba(255,255,255,.22) 50%,transparent 78%,rgba(0,0,0,.18)),linear-gradient(#ff7aa2,#e0245e);
+  box-shadow:inset 0 -6px 0 rgba(0,0,0,.14),0 8px 14px rgba(0,0,0,.25);
+  transition:transform 1s cubic-bezier(.2,.7,.2,1),opacity 1s}
+.box.open .lid{transform:translate(90px,-130vh) rotate(38deg);opacity:0}
+.rib{position:absolute;left:50%;width:34px;margin-left:-17px;background:linear-gradient(90deg,#ffd166,#fff1b8 50%,#ffc233)}
+.body .rib{top:0;bottom:0}.lid .rib{top:0;bottom:0}
+.bow{position:absolute;left:50%;top:-30px;width:0;height:0}
+.bow i{position:absolute;width:52px;height:38px;border-radius:50% 50% 50% 8%;border:9px solid #ffd166;top:0;transform-origin:0 100%}
+.bow i:first-child{left:-52px;transform:rotate(-12deg) scaleX(-1);transform-origin:100% 100%;left:0;margin-left:-52px}
+.bow i:last-child{left:0;transform:rotate(12deg)}
+.bow b{position:absolute;left:-11px;top:14px;width:22px;height:22px;border-radius:50%;background:#ffc233;box-shadow:0 3px 6px rgba(0,0,0,.25)}
+.spark{position:absolute;font-size:18px;animation:tw 2.4s ease-in-out infinite;pointer-events:none}
+@keyframes tw{0%,100%{opacity:0;transform:scale(.4) rotate(0)}50%{opacity:1;transform:scale(1.1) rotate(90deg)}}
+
+/* ---------- Этап 2: торт ---------- */
+#cake{position:fixed;left:50%;top:50%;width:230px;height:260px;margin:-130px 0 0 -115px;z-index:5;
+  opacity:0;transform:translateY(120px) scale(.4);pointer-events:none;transition:transform 1s var(--spring),opacity .6s,top .9s cubic-bezier(.6,0,.2,1)}
+#cake.show{opacity:1;transform:none;pointer-events:auto}
+#cake.mini{top:calc(100% - 100px);transform:scale(.38);pointer-events:none}
+.plate{position:absolute;bottom:0;left:0;right:0;height:22px;border-radius:50%;background:linear-gradient(#fff,#e4d9f5);box-shadow:0 14px 24px rgba(30,5,60,.4)}
+.tier{position:absolute;left:50%;transform:translateX(-50%);border-radius:14px 14px 10px 10px;overflow:hidden}
+.t1{bottom:10px;width:220px;height:88px;background:linear-gradient(#8a4b2a,#5e2f18)}
+.t2{bottom:88px;width:158px;height:72px;background:linear-gradient(#a05a34,#6d3820)}
+.tier::before{content:"";position:absolute;inset:0 0 auto;height:34px;
+  background:radial-gradient(circle at 12px 100%,#fff 13px,transparent 14px) 0 0/28px 100% repeat-x,linear-gradient(#fff,#ffe3ef);
+  -webkit-mask:linear-gradient(#000,#000);filter:drop-shadow(0 3px 0 rgba(0,0,0,.08))}
+.tier::after{content:"";position:absolute;left:0;right:0;bottom:16px;height:8px;background:repeating-linear-gradient(90deg,#ff5d8f 0 10px,transparent 10px 22px);opacity:.9}
+.candle{position:absolute;left:50%;bottom:158px;width:12px;height:52px;margin-left:-6px;border-radius:4px;background:repeating-linear-gradient(-45deg,#fff 0 8px,#ff7aa2 8px 16px)}
+.wick{position:absolute;left:50%;top:-5px;width:2px;height:7px;margin-left:-1px;background:#333}
+.flame{position:absolute;left:50%;top:-38px;width:22px;height:34px;margin-left:-11px;cursor:pointer;
+  border-radius:50% 50% 50% 50%/60% 60% 40% 40%;transform-origin:50% 100%;
+  background:radial-gradient(ellipse at 50% 75%,#fff7c2 0 25%,#ffd23f 55%,#ff8a1f);
+  box-shadow:0 0 22px 8px rgba(255,190,60,.65),0 0 70px 26px rgba(255,140,40,.4);
+  animation:flick .16s ease-in-out infinite alternate;transition:transform .3s,opacity .3s}
+.flame::after{content:"";position:absolute;inset:-26px -30px}   /* увеличенная область нажатия */
+.flame:hover{filter:brightness(1.15)}
+@keyframes flick{from{transform:scale(1,1) rotate(-3deg)}to{transform:scale(.92,1.08) rotate(3deg)}}
+.flame.out{animation:none;opacity:0;transform:scale(.2);pointer-events:none}
+#cake .prompt{position:fixed;top:calc(50% + 165px);transition:opacity .5s}
+
+/* ---------- Этап 3: открытка ---------- */
+#s3{pointer-events:none}
+.cardwrap{position:relative;width:min(74vw,290px);margin-top:-6vh;transform:translateY(130vh) rotate(14deg);opacity:0;transition:transform 1.1s var(--spring),opacity .4s}
+#s3.show .cardwrap{transform:none;opacity:1;pointer-events:auto}
+.tilt{transform:perspective(900px) rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg));transition:transform .25s ease-out;will-change:transform;cursor:pointer}
+.polaroid{position:relative;background:#fffdf8;color:var(--ink);padding:14px 14px 18px;border-radius:8px;
+  box-shadow:0 30px 50px rgba(30,5,60,.45),0 2px 0 #fff inset;overflow:hidden}
+.photo{aspect-ratio:1;border-radius:4px;display:grid;place-items:center;font-size:96px;overflow:hidden;
+  background:linear-gradient(135deg,var(--c1),var(--c2) 55%,var(--c3))}
+.photo img{width:100%;height:100%;object-fit:cover;display:block}
+.cap{font-family:var(--hand);font-weight:700;font-size:clamp(1.6rem,7vw,2rem);text-align:center;margin:12px 0 0;line-height:1.1}
+.hint{font-size:.78rem;text-align:center;opacity:.6;margin-top:4px}
+.glare{position:absolute;inset:0;pointer-events:none;mix-blend-mode:soft-light;
+  background:radial-gradient(circle at var(--gx,50%) var(--gy,0%),rgba(255,255,255,.9),transparent 55%)}
+.bub{position:absolute;width:74px;height:74px;border-radius:50%;display:grid;place-items:center;text-align:center;line-height:1.05;
+  background:var(--glass);border:1px solid var(--glass-b);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  box-shadow:0 10px 28px rgba(30,5,60,.35),inset 0 0 18px rgba(255,255,255,.25);
+  animation:float var(--d,5s) ease-in-out var(--dl,0s) infinite alternate;transition:transform .3s var(--spring),background .3s;z-index:3}
+.bub span{font-size:26px;display:block}.bub small{font-size:.62rem;font-weight:800}
+.bub:hover{background:rgba(255,255,255,.3)}.bub:active{transform:scale(.85)}
+.bub.seen{opacity:.65}.bub.seen::after{content:"✓";position:absolute;top:2px;right:6px;font-size:.8rem}
+@keyframes float{from{translate:0 -8px}to{translate:0 10px}}
+#s3 .prompt{top:auto;bottom:calc(6% + env(safe-area-inset-bottom));z-index:6}
+
+/* ---------- Оверлеи ---------- */
+.ov{position:fixed;inset:0;z-index:70;display:grid;place-items:center;padding:20px;background:rgba(25,8,55,.55);
+  backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);opacity:0;visibility:hidden;transition:opacity .35s,visibility .35s}
+.ov.on{opacity:1;visibility:visible}
+.fortune{max-width:340px;text-align:center;padding:28px 26px;border-radius:26px;background:var(--glass);border:1px solid var(--glass-b);
+  box-shadow:0 30px 60px rgba(0,0,0,.35);transform:scale(.6) translateY(30px);transition:transform .5s var(--spring)}
+.ov.on .fortune{transform:none}
+.fortune .em{font-size:52px}.fortune h3{margin:6px 0 8px;font-size:1.4rem}.fortune p{margin:0;line-height:1.5;font-size:1.05rem;text-wrap:pretty}
+.paper{position:relative;width:min(92vw,430px);max-height:86vh;overflow:auto;padding:30px 28px 26px;border-radius:6px;color:#3a2a1a;
+  background:repeating-linear-gradient(#fff9e8 0 31px,#e8dcc0 31px 32px);box-shadow:0 30px 70px rgba(0,0,0,.5);
+  transform-origin:50% 0;transform:perspective(1000px) rotateX(-88deg);transition:transform .8s var(--spring)}
+.ov.on .paper{transform:none}
+.paper h2{font-family:var(--hand);font-size:2.3rem;margin:0 0 6px;line-height:1.1;color:#b3204f}
+.paper p{font-family:var(--hand);font-size:1.6rem;line-height:32px;margin:0 0 4px;white-space:pre-line;font-weight:500}
+.close{margin-top:14px;padding:10px 22px;border-radius:99px;background:#b3204f;color:#fff;font-weight:800;transition:transform .3s var(--spring)}
+.close:hover{transform:scale(1.08)}.close:active{transform:scale(.92)}
+:focus-visible{outline:3px solid #fff;outline-offset:3px}
+@media (prefers-reduced-motion:reduce){*{animation-duration:.01s!important;animation-iteration-count:1!important}}
+@media (max-height:640px){#s1 .prompt{top:calc(50% + 125px)}.box{transform:scale(.85)}}
+</style>
+</head>
+<body>
+
+<canvas id="fx"></canvas>
+<button id="snd" aria-label="Звук вкл/выкл">🔊</button>
+
+<!-- Этап 1 -->
+<section class="stage" id="s1">
+  <div class="box" id="box" role="button" tabindex="0" aria-label="Открыть подарок">
+    <div class="body"><div class="rib"></div></div>
+    <div class="lid"><div class="rib"></div><div class="bow"><i></i><i></i><b></b></div></div>
+    <span class="spark" style="left:-30px;top:20px">✨</span>
+    <span class="spark" style="right:-26px;top:70px;animation-delay:.8s">⭐</span>
+    <span class="spark" style="left:-10px;bottom:20px;animation-delay:1.5s">✨</span>
+  </div>
+  <div class="prompt pulse" id="p1"></div>
+</section>
+
+<!-- Этап 2 -->
+<div id="cake">
+  <div class="plate"></div><div class="tier t1"></div><div class="tier t2"></div>
+  <div class="candle"><div class="wick"></div><div class="flame" id="flame" role="button" tabindex="0" aria-label="Задуть свечу"></div></div>
+  <div class="prompt hide" id="p2"></div>
+</div>
+
+<!-- Этап 3 -->
+<section class="stage" id="s3">
+  <div class="cardwrap" id="cardwrap">
+    <div class="tilt" id="tilt" role="button" tabindex="0" aria-label="Открыть письмо">
+      <div class="polaroid">
+        <div class="photo" id="photo"></div>
+        <p class="cap" id="cap"></p><div class="hint" id="hint"></div>
+        <div class="glare"></div>
+      </div>
+    </div>
+  </div>
+  <div class="prompt hide" id="p3"></div>
+</section>
+
+<div class="ov" id="ovF"><div class="fortune" id="fortune"></div></div>
+<div class="ov" id="ovL"><div class="paper"><h2 id="lh"></h2><p id="lt"></p><button class="close" id="lc"></button></div></div>
+
+<script>
+/* =====================================================================
+   CONFIG — редактируйте только этот блок
+   ===================================================================== */
+const CONFIG = {
+  recipientName: 'Анна',
+  senderName: 'Твой друг',
+  photoUrl: '',            // ссылка или путь к фото (например 'photo.jpg'). Пусто — покажется photoEmoji
+  photoEmoji: '🥳',
+  caption: 'С днём рождения!',
+  colors: { primary: '#3b1c8c', accent: '#d6336c', warm: '#ff9f43' }, // фиолет → розовый → закат
+  ui: {
+    boxPrompt: 'Нажми, чтобы открыть сюрприз!',
+    cakePrompt: 'Загадай желание и задуй свечу — нажми на пламя!',
+    cardPrompt: 'Нажимай на пузыри и открой письмо 💌',
+    cardHint: 'нажми на открытку',
+    closeBtn: 'Закрыть'
+  },
+  letterTitle: 'Дорогая {name}!',
+  letterText:
+`Поздравляю тебя с днём рождения!
+Пусть этот год будет добрым,
+ярким и немного безумным.
+Пусть рядом будут те, кто любит,
+а дела радуют и получаются.
+Ты заслуживаешь всего самого лучшего.
+
+Обнимаю крепко!`,
+  fortunes: [
+    { icon: '🎈', label: 'Счастье', text: 'Каждое утро в этом году будет начинаться с повода улыбнуться.' },
+    { icon: '🚀', label: 'Успех',   text: 'Идеи будут срабатывать с первого раза, а дедлайны — сами сдвигаться.' },
+    { icon: '💰', label: 'Богатство', text: 'Кошелёк потолстеет, а в карманах будут находиться забытые купюры.' },
+    { icon: '🍕', label: 'Пицца',   text: 'Безлимитная пицца до конца года. Условия мелким шрифтом отсутствуют.' }
+  ],
+  sound: true
+};
+
+/* =====================================================================
+   Утилиты
+   ===================================================================== */
+const $ = id => document.getElementById(id);
+const rand = (a, b) => a + Math.random() * (b - a);
+const wait = ms => new Promise(r => setTimeout(r, ms));
+const isTouch = matchMedia('(pointer:coarse)').matches;
+const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* Применяем конфиг к DOM */
+(function applyConfig() {
+  const r = document.documentElement.style, c = CONFIG.colors;
+  r.setProperty('--c1', c.primary); r.setProperty('--c2', c.accent); r.setProperty('--c3', c.warm);
+  $('p1').textContent = CONFIG.ui.boxPrompt;
+  $('p2').textContent = CONFIG.ui.cakePrompt;
+  $('p3').textContent = CONFIG.ui.cardPrompt;
+  $('hint').textContent = CONFIG.ui.cardHint;
+  $('cap').textContent = CONFIG.caption;
+  $('lh').textContent = CONFIG.letterTitle.replace('{name}', CONFIG.recipientName);
+  $('lt').textContent = CONFIG.letterText + '\n\n— ' + CONFIG.senderName;
+  $('lc').textContent = CONFIG.ui.closeBtn;
+  document.title = 'С днём рождения, ' + CONFIG.recipientName + '! 🎁';
+  $('photo').innerHTML = CONFIG.photoUrl
+    ? `<img src="${CONFIG.photoUrl}" alt="Фото" draggable="false">` : CONFIG.photoEmoji;
+  // пузыри-сюрпризы (позиции подобраны так, чтобы не выходить за экран)
+  const spots = [['top:-6%;left:-13%', 5, 0], ['top:6%;right:-13%', 6, .8], ['bottom:18%;left:-14%', 5.5, 1.4], ['bottom:6%;right:-12%', 6.5, .4]];
+  CONFIG.fortunes.slice(0, 4).forEach((f, i) => {
+    const b = document.createElement('button');
+    b.className = 'bub';
+    b.style.cssText = `${spots[i][0]};--d:${spots[i][1]}s;--dl:${spots[i][2]}s`;
+    b.innerHTML = `<div><span>${f.icon}</span><small>${f.label}</small></div>`;
+    b.onclick = e => { const p = b.getBoundingClientRect(); burst(p.left + 37, p.top + 37, 26); Sound.pop(); showFortune(f); b.classList.add('seen'); };
+    $('cardwrap').appendChild(b);
+  });
+})();
+
+/* =====================================================================
+   Звук: синтез через Web Audio API (без mp3)
+   ===================================================================== */
+const Sound = (() => {
+  let ctx, master, on = CONFIG.sound, melodyTimer;
+  const init = () => {
+    if (!ctx) { const AC = window.AudioContext || window.webkitAudioContext; if (!AC) return false; ctx = new AC(); master = ctx.createGain(); master.gain.value = .5; master.connect(ctx.destination); }
+    if (ctx.state === 'suspended') ctx.resume();
+    return true;
+  };
+  const tone = (f, dur = .15, type = 'sine', vol = .3, delay = 0, slide = 0) => {
+    if (!on || !init()) return;
+    const t = ctx.currentTime + delay, o = ctx.createOscillator(), g = ctx.createGain();
+    o.type = type; o.frequency.setValueAtTime(f, t);
+    if (slide) o.frequency.exponentialRampToValueAtTime(Math.max(30, f + slide), t + dur);
+    g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(vol, t + .01); g.gain.exponentialRampToValueAtTime(.001, t + dur);
+    o.connect(g).connect(master); o.start(t); o.stop(t + dur + .05);
+  };
+  const noise = (dur = .4, vol = .2, delay = 0) => {
+    if (!on || !init()) return;
+    const n = ctx.sampleRate * dur, buf = ctx.createBuffer(1, n, ctx.sampleRate), d = buf.getChannelData(0);
+    for (let i = 0; i < n; i++) d[i] = (Math.random() * 2 - 1) * (1 - i / n);
+    const s = ctx.createBufferSource(), g = ctx.createGain(), f = ctx.createBiquadFilter();
+    f.type = 'lowpass'; f.frequency.value = 900; g.gain.value = vol; s.buffer = buf;
+    s.connect(f).connect(g).connect(master); s.start(ctx.currentTime + delay);
+  };
+  const note = n => 261.63 * Math.pow(2, n / 12);
+  return {
+    unlock: init,
+    click() { tone(520, .09, 'triangle', .25, 0, 300) },
+    pop() { tone(300, .12, 'sine', .35, 0, 700); tone(900, .08, 'triangle', .15, .03) },
+    rumble() { for (let i = 0; i < 8; i++) tone(70 + i * 4, .12, 'sawtooth', .12, i * .09); noise(.8, .15) },
+    whoosh() { tone(200, .5, 'sawtooth', .12, 0, 900); noise(.5, .12) },
+    puff() { noise(.5, .3) },
+    fanfare() { [0, 4, 7, 12, 7, 12, 16].forEach((n, i) => tone(note(n + 12), .3, 'square', .14, i * .11)); tone(note(19), .9, 'triangle', .25, .8) },
+    melody() {   // «Happy Birthday» в мажоре, по кругу
+      const seq = [[0, .5], [0, .25], [2, 1], [0, 1], [5, 1], [4, 2], [0, .5], [0, .25], [2, 1], [0, 1], [7, 1], [5, 2],
+                   [0, .5], [0, .25], [12, 1], [9, 1], [5, 1], [4, 1], [2, 2], [10, .5], [10, .25], [9, 1], [5, 1], [7, 1], [5, 2]];
+      const play = () => { let t = 0; seq.forEach(([n, b]) => { tone(note(n), b * .4, 'triangle', .11, t); t += b * .4 }); melodyTimer = setTimeout(play, (t + 1.2) * 1000); };
+      clearTimeout(melodyTimer); play();
+    },
+    toggle() { on = !on; if (!on) clearTimeout(melodyTimer); return on; },
+    get on() { return on }
+  };
+})();
+$('snd').onclick = () => { $('snd').textContent = Sound.toggle() ? '🔊' : '🔇'; if (Sound.on) Sound.click(); };
+if (!CONFIG.sound) $('snd').textContent = '🔇';
+
+/* =====================================================================
+   Частицы (Canvas + requestAnimationFrame): конфетти, искры, дым
+   ===================================================================== */
+const cv = $('fx'), cx = cv.getContext('2d');
+let W, H, DPR, parts = [], raf = 0;
+const resize = () => { DPR = Math.min(devicePixelRatio || 1, 2); W = innerWidth; H = innerHeight; cv.width = W * DPR; cv.height = H * DPR; cx.setTransform(DPR, 0, 0, DPR, 0, 0); };
+addEventListener('resize', resize); resize();
+const PAL = ['#ffd166', '#ff5d8f', '#7bdff2', '#b2f7ef', '#c77dff', '#fff', '#ff9f43'];
+
+function spawn(p) { parts.push(p); if (!raf) raf = requestAnimationFrame(loop); }
+function burst(x, y, n = 30) {           // искры вокруг точки
+  if (reduced) n = 8;
+  for (let i = 0; i < n; i++) { const a = rand(0, 6.283), s = rand(2, 9);
+    spawn({ k: 's', x, y, vx: Math.cos(a) * s, vy: Math.sin(a) * s, g: .15, life: 1, dec: rand(.014, .03), r: rand(2, 5), c: PAL[i % PAL.length] }); }
+}
+function smoke(x, y) {
+  for (let i = 0; i < 14; i++) spawn({ k: 'm', x: x + rand(-4, 4), y, vx: rand(-.5, .5), vy: rand(-2.2, -.8), g: -.01, life: .6, dec: rand(.008, .014), r: rand(4, 9), c: '#e8e2f5' });
+}
+function confetti(n = 220) {              // полноэкранный взрыв конфетти
+  if (reduced) n = 40;
+  for (let i = 0; i < n; i++) {
+    const left = i % 2, a = rand(-1.5, -.6) + (left ? 0 : -1.0) * 0, side = left ? 1 : -1;
+    spawn({ k: 'c', x: left ? -10 : W + 10, y: H * rand(.55, .95), vx: side * rand(6, 16), vy: rand(-18, -6), g: .28, drag: .985,
+      w: rand(6, 12), h: rand(4, 8), rot: rand(0, 6.28), vr: rand(-.3, .3), life: 1, dec: rand(.003, .006), c: PAL[i % PAL.length], sw: rand(0, 6) });
+  }
+  for (let i = 0; i < 60; i++) spawn({ k: 'c', x: rand(0, W), y: -20, vx: rand(-2, 2), vy: rand(2, 6), g: .05, drag: .995,
+      w: rand(6, 11), h: rand(4, 7), rot: rand(0, 6), vr: rand(-.2, .2), life: 1, dec: .003, c: PAL[i % PAL.length], sw: rand(0, 6) });
+}
+function loop() {
+  cx.clearRect(0, 0, W, H);
+  for (let i = parts.length - 1; i >= 0; i--) {
+    const p = parts[i];
+    p.vy += p.g; if (p.drag) { p.vx *= p.drag; p.vy *= p.drag; }
+    p.x += p.vx; p.y += p.vy; p.life -= p.dec;
+    if (p.life <= 0 || p.y > H + 30) { parts.splice(i, 1); continue; }
+    cx.globalAlpha = Math.min(1, p.life * 1.5); cx.fillStyle = p.c;
+    if (p.k === 'c') {                    // конфетти: «переворот» через scaleY
+      p.rot += p.vr; p.sw += .15; p.x += Math.sin(p.sw) * .6;
+      cx.save(); cx.translate(p.x, p.y); cx.rotate(p.rot); cx.scale(1, Math.cos(p.sw)); cx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h); cx.restore();
+    } else if (p.k === 'm') {             // дым растёт и тает
+      p.r += .35; cx.globalAlpha = p.life * .5; cx.beginPath(); cx.arc(p.x, p.y, p.r, 0, 6.283); cx.fill();
+    } else {                              // искры со свечением
+      cx.globalCompositeOperation = 'lighter'; cx.beginPath(); cx.arc(p.x, p.y, p.r * p.life + .5, 0, 6.283); cx.fill(); cx.globalCompositeOperation = 'source-over';
+    }
+  }
+  cx.globalAlpha = 1;
+  raf = parts.length ? requestAnimationFrame(loop) : (cx.clearRect(0, 0, W, H), 0);
+}
+
+/* =====================================================================
+   Сценарий: 3 этапа
+   ===================================================================== */
+let stage = 1;
+const center = el => { const r = el.getBoundingClientRect(); return [r.left + r.width / 2, r.top + r.height / 2]; };
+const activate = (el, fn) => { el.addEventListener('click', fn); el.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); fn(e); } }); };
+
+/* Этап 1 — коробка */
+activate($('box'), async () => {
+  if (stage !== 1) return; stage = 0;
+  Sound.unlock(); enableTilt();                     // жест пользователя: разблокируем звук и гироскоп (iOS)
+  $('p1').classList.add('hide'); $('box').classList.add('shake'); Sound.rumble();
+  await wait(800);
+  const [x, y] = center($('box'));
+  $('box').classList.remove('shake'); $('box').classList.add('open');
+  burst(x, y - 30, 70); burst(x, y - 30, 40); Sound.whoosh(); Sound.pop();
+  await wait(500);
+  $('s1').classList.add('gone'); $('cake').classList.add('show');
+  await wait(900);
+  $('p2').classList.remove('hide'); stage = 2;
+});
+
+/* Этап 2 — свеча */
+activate($('flame'), async e => {
+  if (stage !== 2) return; stage = 0;
+  const [x, y] = center($('flame'));
+  $('flame').classList.add('out'); $('p2').classList.add('hide');
+  smoke(x, y); burst(x, y, 30); Sound.puff();
+  await wait(450);
+  confetti(); Sound.fanfare(); if (Sound.on) setTimeout(Sound.melody, 1800);
+  await wait(1700);
+  $('cake').classList.add('mini');                   // торт уменьшается и уезжает вниз
+  $('s3').classList.add('show');                     // открытка выезжает
+  await wait(1100);
+  $('p3').classList.remove('hide'); stage = 3;
+  setTimeout(confetti, 300, 90);
+});
+
+/* Этап 3 — наклон, письмо, пузыри */
+const tilt = $('tilt');
+function setTilt(rx, ry) {
+  tilt.style.setProperty('--rx', rx + 'deg'); tilt.style.setProperty('--ry', ry + 'deg');
+  tilt.style.setProperty('--gx', (50 + ry * 3) + '%'); tilt.style.setProperty('--gy', (50 - rx * 3) + '%');
+}
+addEventListener('pointermove', e => { if (stage !== 3 || e.pointerType === 'touch' && gyro) return;
+  setTilt(((.5 - e.clientY / H) * 22).toFixed(1), ((e.clientX / W - .5) * 26).toFixed(1)); });
+tilt.addEventListener('pointerleave', () => setTilt(0, 0));
+let gyro = false;
+function enableTilt() {                              // наклон телефона (на iOS нужно разрешение)
+  const on = () => addEventListener('deviceorientation', e => {
+    if (stage !== 3 || e.gamma == null) return; gyro = true;
+    setTilt(Math.max(-16, Math.min(16, (e.beta - 50) * -.4)).toFixed(1), Math.max(-18, Math.min(18, e.gamma * .6)).toFixed(1));
+  });
+  if (window.DeviceOrientationEvent && typeof DeviceOrientationEvent.requestPermission === 'function')
+    DeviceOrientationEvent.requestPermission().then(s => s === 'granted' && on()).catch(() => {});
+  else if (isTouch) on();
+}
+
+function showFortune(f) {
+  $('fortune').innerHTML = `<div class="em">${f.icon}</div><h3>${f.label}</h3><p>${f.text}</p>`;
+  $('ovF').classList.add('on');
+}
+$('ovF').onclick = () => { $('ovF').classList.remove('on'); Sound.click(); };
+activate(tilt, () => { if (stage !== 3) return; Sound.click(); const [x, y] = center(tilt); burst(x, y, 20); $('ovL').classList.add('on'); Sound.fanfare(); });
+$('lc').onclick = () => { $('ovL').classList.remove('on'); Sound.click(); };
+$('ovL').addEventListener('click', e => { if (e.target === $('ovL')) $('lc').click(); });
+addEventListener('keydown', e => { if (e.key === 'Escape') { $('ovF').classList.remove('on'); $('ovL').classList.remove('on'); } });
+</script>
+</body>
+</html>
